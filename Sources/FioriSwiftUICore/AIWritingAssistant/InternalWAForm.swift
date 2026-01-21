@@ -106,7 +106,7 @@ struct InternalWAForm: View {
     
     @ViewBuilder var listContent: some View {
         let sections = self.menus.map { WritingToolSection(menus: $0) }
-        List {
+        List(selection: self.$context.selection) {
             ForEach(sections) { section in
                 Section {
                     ForEach(section.menus) { menu in
@@ -191,6 +191,7 @@ struct InternalWAForm: View {
             }
             .foregroundStyle(Color.preferredColor(self.isEnabled ? .primaryLabel : .quaternaryLabel))
             .font(Font.fiori(forTextStyle: .body))
+            .tag(item)
             .accessibilityElement(children: .combine)
             .accessibilityHint(NSLocalizedString("Double tap to activate", tableName: "FioriSwiftUICore", bundle: Bundle.accessor, comment: "Double tap to activate"))
             .accessibilityAddTraits(.isButton)
