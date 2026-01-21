@@ -210,17 +210,6 @@ struct InternalWAForm: View {
                 }
                 self.context.selection = item
             }
-            .onLongPressGesture(
-                minimumDuration: 0.5,
-                perform: {
-                    self.context.selection = item
-                },
-                onPressingChanged: { pressing in
-                    withAnimation(.easeOut) {
-                        self.tappedMenuId = pressing ? item.id : nil
-                    }
-                }
-            )
         } else {
             NavigationLink {
                 InternalWAForm(configuration: self.configuration, menus: [item.children], isTopLevel: false, navigationBarTitleString: item.title)
