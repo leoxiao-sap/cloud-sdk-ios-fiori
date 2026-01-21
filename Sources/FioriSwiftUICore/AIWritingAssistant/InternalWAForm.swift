@@ -111,6 +111,9 @@ struct InternalWAForm: View {
                 Section {
                     ForEach(section.menus) { menu in
                         self.row(menu)
+                            .listRowBackground(
+                                Color.preferredColor(.secondaryGroupedBackground)
+                            )
                     }
                 } header: {
                     if self.context.rewriteTextSet.count > 1, section.id == sections.first?.id {
@@ -188,22 +191,36 @@ struct InternalWAForm: View {
             }
             .foregroundStyle(Color.preferredColor(self.isEnabled ? .primaryLabel : .quaternaryLabel))
             .font(Font.fiori(forTextStyle: .body))
-            .tag(item)
             .accessibilityElement(children: .combine)
             .accessibilityHint(NSLocalizedString("Double tap to activate", tableName: "FioriSwiftUICore", bundle: Bundle.accessor, comment: "Double tap to activate"))
             .accessibilityAddTraits(.isButton)
             .animation(.easeOut, value: self.tappedMenuId)
             .listRowBackground(
-                self.tappedMenuId == item.id ? .preferredColor(.secondaryFill) : Color.preferredColor(.secondaryGroupedBackground)
+                self.tappedMenuId == item.id ?
+                    .preferredColor(.secondaryFill) :
+                    Color.preferredColor(.secondaryGroupedBackground)
             )
             .contentShape(Rectangle())
             .onTapGesture {
-                self.tappedMenuId = item.id
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    self.tappedMenuId = nil
+                withAnimation {
+                    self.tappedMenuId = item.id
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        self.tappedMenuId = nil
+                    }
                 }
                 self.context.selection = item
             }
+            .onLongPressGesture(
+                minimumDuration: 0.5,
+                perform: {
+                    self.context.selection = item
+                },
+                onPressingChanged: { pressing in
+                    withAnimation(.easeOut) {
+                        self.tappedMenuId = pressing ? item.id : nil
+                    }
+                }
+            )
         } else {
             NavigationLink {
                 InternalWAForm(configuration: self.configuration, menus: [item.children], isTopLevel: false, navigationBarTitleString: item.title)
