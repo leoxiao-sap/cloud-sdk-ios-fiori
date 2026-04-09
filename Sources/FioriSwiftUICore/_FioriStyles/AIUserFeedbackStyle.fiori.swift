@@ -696,16 +696,37 @@ struct KeyValueFormViewTitleStyleStackKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+    /// A closure to perform the down vote action for custom `AIUserFeedback` action views.
+    ///
+    /// When providing a custom action view to `AIUserFeedback`, the component does not automatically perform internal down vote logic.
+    /// This environment value exposes a closure that custom views can call to trigger the component's down vote behavior,
+    /// including updating the vote state, showing feedback details, and invoking the `onDownVote` callback.
+    ///
+    /// - Note: This value is only available when used within a custom action view of `AIUserFeedback`.
     public var aiUserFeedbackPerformDownVote: (() -> Void)? {
         get { self[AIUserFeedbackPerformDownVoteKey.self] }
         set { self[AIUserFeedbackPerformDownVoteKey.self] = newValue }
     }
     
+    /// A closure to perform the up vote action for custom `AIUserFeedback` action views.
+    ///
+    /// When providing a custom secondary action view to `AIUserFeedback`, the component does not automatically perform internal up vote logic.
+    /// This environment value exposes a closure that custom views can call to trigger the component's up vote behavior,
+    /// including updating the vote state and invoking the `onUpVote` callback.
+    ///
+    /// - Note: This value is only available when used within a custom secondary action view of `AIUserFeedback`.
     public var aiUserFeedbackPerformUpVote: (() -> Void)? {
         get { self[AIUserFeedbackPerformUpVoteKey.self] }
         set { self[AIUserFeedbackPerformUpVoteKey.self] = newValue }
     }
     
+    /// A closure to perform the submit action for custom `AIUserFeedback` action views.
+    ///
+    /// When providing custom action or submit views to `AIUserFeedback`, the component does not automatically perform internal submission logic.
+    /// This environment value exposes a closure that custom views can call to trigger the component's submit behavior,
+    /// including gathering form data, invoking the `onSubmit` callback, and handling dismissal or error states.
+    ///
+    /// - Note: This value is only available when used within custom action or submit action views of `AIUserFeedback`.
     public var aiUserFeedbackPerformSubmit: (() -> Void)? {
         get { self[AIUserFeedbackPerformSubmitKey.self] }
         set { self[AIUserFeedbackPerformSubmitKey.self] = newValue }
