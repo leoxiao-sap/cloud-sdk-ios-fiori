@@ -122,7 +122,7 @@ public struct AIUserFeedbackBaseStyle: AIUserFeedbackStyle {
                 }
             }
             .onChange(of: configuration.voteState) {
-                if configuration.voteState == .downVote {
+                if configuration.voteState == .downVote, configuration.action.isEmpty {
                     self.isShowSubmitButton = true
                 }
                 self.shouldApplyDetentHeight = true
@@ -299,8 +299,10 @@ public struct AIUserFeedbackBaseStyle: AIUserFeedbackStyle {
                 }
                 .accessibilityLabel(self.accessibilityLabel(label: "Negative feedback".localizedFioriString(), selected: configuration.voteState == .downVote))
         } else {
+            // If host supplied a custom action view, do NOT implicitly run component internal logic.
+            // Instead, expose to the custom view an action context via environment values so the host can opt-in to call component helpers (downvote/upvote/submit)
             configuration.action
-                .onSimultaneousTapGesture {
+                .environment(\.aiUserFeedbackPerformDownVote) {
                     self.downvoteAction(configuration)
                 }
         }
@@ -312,7 +314,7 @@ public struct AIUserFeedbackBaseStyle: AIUserFeedbackStyle {
             self.inlineFeedbackIsPresented.toggle()
         }
         self.cachedLastVoteState = configuration.voteState
-        configuration.voteState = .downVote
+        configuration.voteState = self.cachedLastVoteState == .downVote ? .notDetermined : .downVote
         self.shouldShowFeedbackDetail = true
         self.isShowSubmitButton = true
         configuration.onDownVote?()
@@ -330,9 +332,14 @@ public struct AIUserFeedbackBaseStyle: AIUserFeedbackStyle {
                 }
                 .accessibilityLabel(self.accessibilityLabel(label: "Positive feedback".localizedFioriString(), selected: configuration.voteState == .upVote))
         } else {
+            // Host-supplied view: do not call any internal helpers implicitly.
+            // Provide helper closures to the host via environment so they can opt-in.
             configuration.secondaryAction
-                .onSimultaneousTapGesture {
+                .environment(\.aiUserFeedbackPerformUpVote) {
                     self.upvoteAction(configuration)
+                }
+                .environment(\.aiUserFeedbackPerformSubmit) {
+                    self.onSubmitAction(configuration)
                 }
         }
     }
@@ -340,7 +347,7 @@ public struct AIUserFeedbackBaseStyle: AIUserFeedbackStyle {
     func upvoteAction(_ configuration: AIUserFeedbackConfiguration) {
         guard !self.disableMultipleVoteForAIUserFeedback else { return }
         self.cachedLastVoteState = configuration.voteState
-        configuration.voteState = .upVote
+        configuration.voteState = self.cachedLastVoteState == .upVote ? .notDetermined : .upVote
         configuration.onUpVote?()
     }
     
@@ -657,6 +664,21 @@ public extension View {
     }
 }
 
+// Expose lightweight action helpers to host-supplied custom action views via environment.
+// Hosts can optionally call these closures/bindings if they want the component's internal behavior (e.g. showing submit button, handling inline presentation, calling onDownVote/onUpVote) to run.
+// Important: the component will NOT implicitly call internal helpers when a custom action view is supplied; this lets hosts decide behavior.
+struct AIUserFeedbackPerformDownVoteKey: EnvironmentKey {
+    static let defaultValue: (() -> Void)? = nil
+}
+
+struct AIUserFeedbackPerformUpVoteKey: EnvironmentKey {
+    static let defaultValue: (() -> Void)? = nil
+}
+
+struct AIUserFeedbackPerformSubmitKey: EnvironmentKey {
+    static let defaultValue: (() -> Void)? = nil
+}
+
 struct IllustratedMessageTitleStyleStackKey: EnvironmentKey {
     static let defaultValue: [any TitleStyle] = []
 }
@@ -674,6 +696,21 @@ struct KeyValueFormViewTitleStyleStackKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+    public var aiUserFeedbackPerformDownVote: (() -> Void)? {
+        get { self[AIUserFeedbackPerformDownVoteKey.self] }
+        set { self[AIUserFeedbackPerformDownVoteKey.self] = newValue }
+    }
+    
+    public var aiUserFeedbackPerformUpVote: (() -> Void)? {
+        get { self[AIUserFeedbackPerformUpVoteKey.self] }
+        set { self[AIUserFeedbackPerformUpVoteKey.self] = newValue }
+    }
+    
+    public var aiUserFeedbackPerformSubmit: (() -> Void)? {
+        get { self[AIUserFeedbackPerformSubmitKey.self] }
+        set { self[AIUserFeedbackPerformSubmitKey.self] = newValue }
+    }
+    
     var illustratedMessageTitleStyle: any TitleStyle {
         self.illustratedMessageTitleStyleStack.last ?? .base
     }
