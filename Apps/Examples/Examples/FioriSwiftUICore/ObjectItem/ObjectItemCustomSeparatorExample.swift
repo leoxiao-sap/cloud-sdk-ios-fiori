@@ -115,7 +115,17 @@ struct ObjectItemCustomSeparatorExample: View {
             Tag("Started")
                 .tagStyle(MyTagStyle())
             Tag("PM01")
-            Tag("103-Repair")
+                .tagStyle(OutlinedTagStyle())
+            Tag("103-Re")
+                .tagStyle(OutlinedTagStyle())
+            Tag("103-Re2 103-Re2 103-Re2 103-Re2 103-Re2 103-Re2 103-Re2 103-Re2 103-Re2 103-Re2 103-Re2 103-Re2")
+                .tagStyle(OutlinedTagStyle())
+            Tag("103-Re")
+            Tag("103-Re4")
+            Tag("103-Re5")
+            Tag("103-Repair6")
+            Tag("103-Re7")
+            Tag("103-Repair8")
         }),
         
         ObjectItem(title: {
@@ -212,6 +222,12 @@ struct ObjectItemCustomSeparatorExample: View {
                             item.alignmentGuide(.listRowSeparatorLeading) { _ in
                                 50
                             }
+                        }
+                        .tagLineLimit(3)
+                        .moreTag { count in
+                            Text("+\(count) more")
+                                .font(.fiori(forTextStyle: .footnote))
+                                .foregroundStyle(Color.blue)
                         }
                 }
             } header: {

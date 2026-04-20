@@ -703,3 +703,6 @@
 
 /* Checkout Indicator accessibility label: Checkout Indicator */
 "Checkout Indicator" = "Checkout Indicator";
+
+/*XMSG: More tag text shown when tags are truncated in MHStack, %d is the count of hidden tags */
+"+%d more" = "+%d more";

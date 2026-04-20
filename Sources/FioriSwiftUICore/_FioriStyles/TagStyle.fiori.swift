@@ -348,6 +348,104 @@ public extension View {
     }
 }
 
+/// Environment key for limiting the number of lines for tags.
+struct TagLineLimitEnvironmentKey: EnvironmentKey {
+    static let defaultValue: Int? = nil
+}
+
+public extension EnvironmentValues {
+    /// The maximum number of lines that a Tag container can display.
+    /// If the value is nil, it uses as many lines as required.
+    /// The default is nil.
+    var tagLineLimit: Int? {
+        get { self[TagLineLimitEnvironmentKey.self] }
+        set { self[TagLineLimitEnvironmentKey.self] = newValue }
+    }
+}
+
+public extension View {
+    /// Sets the maximum number of lines that a View can display tags.
+    ///
+    /// Use `tagLineLimit(_:)` to cap the number of lines for tags.
+    ///
+    /// The line limit applies to all ``Tag`` instances within a hierarchy.
+    ///
+    /// ```swift
+    /// MHStack {
+    ///     // ... many tags
+    /// }
+    /// .tagLineLimit(3)
+    /// ```
+    ///
+    /// - Parameter number: The line limit. If `nil`, no line limit applies.
+    /// - Returns: A view that limits the number of tag lines
+    func tagLineLimit(_ number: Int?) -> some View {
+        self.environment(\.tagLineLimit, number)
+    }
+}
+
+/// Type-erased builder for creating custom "more tags" indicator views.
+/// Used to customize the appearance of the "+N more" indicator when tags are truncated.
+struct AnyMoreTagBuilder {
+    let build: (Int) -> AnyView
+    init(_ builder: @escaping (Int) -> some View) {
+        self.build = { AnyView(builder($0)) }
+    }
+}
+
+/// Environment key for customizing the "more tags" indicator builder.
+struct MoreTagBuilderKey: EnvironmentKey {
+    static let defaultValue: AnyMoreTagBuilder = AnyMoreTagBuilder { count in
+        Text(String(format: "+%d more".localizedFioriString(), count))
+            .font(.fiori(forTextStyle: .footnote))
+            .foregroundStyle(Color.preferredColor(.accentLabel10))
+    }
+}
+
+extension EnvironmentValues {
+    /// The builder used to create the "more tags" indicator view.
+    /// This view is displayed when tags are truncated due to `tagLimit` or `tagLineLimit`.
+    /// The default shows "+N more" in the Fiori footnote style.
+    var moreTagBuilder: AnyMoreTagBuilder {
+        get { self[MoreTagBuilderKey.self] }
+        set { self[MoreTagBuilderKey.self] = newValue }
+    }
+}
+
+public extension View {
+    /// Customizes the appearance of the "more tags" indicator.
+    ///
+    /// Use `moreTag(_:)` to customize how the "+N more" indicator appears
+    /// when tags are truncated due to `tagLimit` or `tagLineLimit` constraints.
+    ///
+    /// The builder closure receives the count of hidden tags as a parameter.
+    ///
+    /// ```swift
+    /// MHStack {
+    ///     ForEach(items, id: \.self) { item in
+    ///         Text(item)
+    ///     }
+    /// }
+    /// .tagLineLimit(2)
+    /// .moreTag { count in
+    ///     Text("+\(count)")
+    ///         .font(.caption)
+    ///         .foregroundColor(.red)
+    ///         .padding(4)
+    ///         .background(Color.red.opacity(0.1))
+    ///         .cornerRadius(4)
+    /// }
+    /// ```
+    ///
+    /// - Parameter builder: A closure that takes the number of hidden tags
+    ///   and returns a custom view to display as the "more" indicator.
+    /// - Returns: A view with a customized "more tags" indicator.
+    func moreTag(@ViewBuilder builder: @escaping (Int) -> some View) -> some View {
+        let anyBuilder = AnyMoreTagBuilder(builder)
+        return self.environment(\.moreTagBuilder, anyBuilder)
+    }
+}
+
 @available(*, deprecated, message: "Use `TagConfiguration` instead")
 /// The properties of a tag.
 public struct TagStyleConfiguration {
