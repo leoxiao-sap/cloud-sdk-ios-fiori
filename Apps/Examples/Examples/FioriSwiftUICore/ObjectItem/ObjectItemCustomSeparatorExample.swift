@@ -223,7 +223,7 @@ struct ObjectItemCustomSeparatorExample: View {
                                 50
                             }
                         }
-                        .tagLineLimit(3)
+                        .tagsLineLimit(3)
                         .moreTag { count in
                             Text("+\(count) more")
                                 .font(.fiori(forTextStyle: .footnote))

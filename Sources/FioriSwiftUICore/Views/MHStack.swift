@@ -17,7 +17,7 @@ public struct MHStack<T: TagViewList>: View {
     let lineSpacing: CGFloat
     
     @Environment(\.tagLimit) var tagLimit
-    @Environment(\.tagLineLimit) var tagLineLimit
+    @Environment(\.tagsLineLimit) var tagsLineLimit
     @Environment(\.moreTagBuilder) var moreTagBuilder
     
     @State private var mainViewSize = CGSize(width: -1, height: -1)
@@ -69,8 +69,8 @@ public struct MHStack<T: TagViewList>: View {
         var currentLineMaxHeight: CGFloat = 0
         var currentLine = 0
 
-        let maxLines = self.tagLineLimit ?? Int.max
-        let hasLimit = self.tagLineLimit != nil
+        let maxLines = self.tagsLineLimit ?? Int.max
+        let hasLimit = self.tagsLineLimit != nil
 
         // Use the actual measured MoreTag size
         let currentMoreTagSize = self.moreTagSize.width > 0 ? self.moreTagSize : CGSize(width: 40, height: 20)

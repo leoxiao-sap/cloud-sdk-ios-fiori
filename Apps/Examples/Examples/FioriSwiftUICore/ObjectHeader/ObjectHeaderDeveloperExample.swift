@@ -68,7 +68,7 @@ struct ObjectHeaderDeveloperExample: ListDataProtocol {
                                   }, chart: {
                                       ChartView(chartModel)
                                   })
-                                  }).tagLineLimit(1)
+                                  }).tagsLineLimit(1)
             
             return AnyView(oh)
             
@@ -156,7 +156,7 @@ struct ObjectHeaderDeveloperExample: ListDataProtocol {
                 Tag("Tag9")
                 
                 Tag("Tag10")
-            }.tagLineLimit(2)
+            }.tagsLineLimit(2)
             
             return AnyView(tags)
             
