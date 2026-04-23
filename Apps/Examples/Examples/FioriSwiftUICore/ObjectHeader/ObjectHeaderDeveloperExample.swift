@@ -44,22 +44,31 @@ struct ObjectHeaderDeveloperExample: ListDataProtocol {
         
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
-            let oh = ObjectHeader(title: "Transformer Overheating",
-                                  subtitle: "Three Phase Pad Mounted Transformer (533423)",
-                                  tags: ["I am selected", "PM01", "103-Repair", "tag 4", "tag 5", "tag 6", "Tag 9898232323", "Tagoweioaifoewif"],
-                                  footnote: "1000 - Hamburg, MECHANIK",
-                                  descriptionText: "Customer noticed that the transformer started",
-                                  status: TextOrIcon.text("High"),
-                                  substatus: TextOrIcon.text("Scheduled"),
-                                  detailContent: {
-                                      HeaderChart(title: {
-                                          Text("Temperature")
-                                      }, subtitle: {
-                                          Text("20 min ago")
-                                      }, chart: {
-                                          ChartView(chartModel)
-                                      })
+            let oh = ObjectHeader(title: { Text("Transformer Overheating") },
+                                  subtitle: { Text("Three Phase Pad Mounted Transformer (533423)") },
+                                  tags: {
+                                      Tag("I am selected")
+                                      Tag("PM01")
+                                      Tag("PM01")
+                                      Tag("103-Repair")
+                                      Tag("tag 4")
+                                      Tag("tag 5")
+                                      Tag("tag 6")
+                                      Tag("tag 9898232323")
+                                      Tag("Tagoweioaifoewif")
+                                  },
+                                  footnote: { Text("1000 - Hamburg, MECHANIK") },
+                                  descriptionText: { Text("Customer noticed that the transformer started") },
+                                  status: { TextOrIconView(TextOrIcon.text("High")) },
+                                  substatus: { TextOrIconView(TextOrIcon.text("Scheduled")) },
+                                  detailContent: { HeaderChart(title: {
+                                      Text("Temperature")
+                                  }, subtitle: {
+                                      Text("20 min ago")
+                                  }, chart: {
+                                      ChartView(chartModel)
                                   })
+                                  }).tagsLineLimit(1)
             
             return AnyView(oh)
             
@@ -147,7 +156,7 @@ struct ObjectHeaderDeveloperExample: ListDataProtocol {
                 Tag("Tag9")
                 
                 Tag("Tag10")
-            }
+            }.tagsLineLimit(2)
             
             return AnyView(tags)
             
