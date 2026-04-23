@@ -188,8 +188,15 @@ public struct MHStack<T: TagViewList>: View {
     }
     
     private func updateMainViewSize(width: CGFloat, height: CGFloat) {
-        DispatchQueue.main.async {
-            self.mainViewSize = CGSize(width: width, height: height)
+        let newSize = CGSize(width: width, height: height)
+        
+        if self.mainViewSize.different(with: newSize) {
+            DispatchQueue.main.async {
+                // Double-check to prevent stale states during async execution.
+                if self.mainViewSize.different(with: newSize) {
+                    self.mainViewSize = newSize
+                }
+            }
         }
     }
     
@@ -197,25 +204,25 @@ public struct MHStack<T: TagViewList>: View {
         ZStack(alignment: .topLeading) {
             ForEach(layouts, id: \.index) { layout in
                 if layout.index >= 0 {
-                    Measurable(content: {
-                        self.tags.view(at: layout.index)
-                    }) { size in
-                        self.measuredSizes[layout.index] = size
-                    }
-                    .position(x: layout.x, y: layout.y)
+                    self.tags.view(at: layout.index)
+                        .fioriSizeReader { size in
+                            if let oldSize = self.measuredSizes[layout.index] {
+                                if size.different(with: oldSize) {
+                                    self.measuredSizes[layout.index] = size
+                                }
+                            } else {
+                                self.measuredSizes[layout.index] = size
+                            }
+                        }
+                        .position(x: layout.x, y: layout.y)
                 } else {
                     self.moreTagBuilder.build(self.tagCount - layouts.filter { $0.index >= 0 }.count)
                         .fixedSize()
-                        .background(
-                            GeometryReader { geo in
-                                Color.clear
-                                    .onAppear {
-                                        if geo.size != self.moreTagSize {
-                                            self.moreTagSize = geo.size
-                                        }
-                                    }
+                        .fioriSizeReader { size in
+                            if self.moreTagSize.different(with: size) {
+                                self.moreTagSize = size
                             }
-                        )
+                        }
                         .position(x: layout.x, y: layout.y)
                 }
             }
@@ -227,32 +234,5 @@ public struct MHStack<T: TagViewList>: View {
         let index: Int
         let x, y: CGFloat
         let size: CGSize
-    }
-}
-
-// MARK: - Measurable View
-
-struct Measurable<Content: View>: View {
-    let content: Content
-    let onMeasure: (CGSize) -> Void
-    
-    init(@ViewBuilder content: () -> Content, onMeasure: @escaping (CGSize) -> Void) {
-        self.content = content()
-        self.onMeasure = onMeasure
-    }
-    
-    var body: some View {
-        self.content
-            .background(
-                GeometryReader { geo in
-                    Color.clear
-                        .preference(key: SizePreferenceKey.self, value: geo.size)
-                }
-            )
-            .onPreferenceChange(SizePreferenceKey.self) { size in
-                DispatchQueue.main.async {
-                    self.onMeasure(size)
-                }
-            }
     }
 }
