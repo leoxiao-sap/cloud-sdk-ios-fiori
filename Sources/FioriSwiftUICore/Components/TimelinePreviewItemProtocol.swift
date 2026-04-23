@@ -53,6 +53,7 @@ private struct TimelinePreviewSortOrderKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
+    /// The sort order for items displayed in a `TimelinePreview`.
     var timelinePreviewSortOrder: TimelinePreviewSortOrder {
         get { self[TimelinePreviewSortOrderKey.self] }
         set { self[TimelinePreviewSortOrderKey.self] = newValue }
