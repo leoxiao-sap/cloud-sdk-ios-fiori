@@ -74,6 +74,7 @@ struct BuildHeader: View {
 struct BuildTimelinePreviewItem: View {
     let configuration: TimelinePreviewConfiguration
     let displayItems: Int
+    @Environment(\.timelinePreviewSortOrder) private var sortOrder
 
     var body: some View {
         HStack(alignment: .timelinePreviewAlignmentGuide, spacing: 4) {
@@ -81,10 +82,10 @@ struct BuildTimelinePreviewItem: View {
             let totalCount = filteredItems.count
             
             ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
-                let dateString = item.formatter.string(from: item.due)
+                let dateString = item.resolvedFormatter.string(from: item.due)
                 let timestampFormat = NSLocalizedString("Today, %@", tableName: "FioriSwiftUICore", bundle: Bundle.accessor, comment: "")
                 let timestampString = String(format: timestampFormat, dateString)
-                let isToday = Date.compareTwoDates(first: item.due, second: Date()) == .orderedSame
+                let isToday = Calendar.current.isDateInToday(item.due)
                 let dateAttributedString = AttributedString(isToday ? timestampString : dateString)
                 let a11yTime = isToday ? NSLocalizedString("Today", tableName: "FioriSwiftUICore", bundle: Bundle.accessor, comment: "") : dateString
                 let isFuture = item.isFuture ?? false
@@ -131,10 +132,16 @@ struct BuildTimelinePreviewItem: View {
             mutableItem.isCurrent = Date.compareTwoDates(first: mutableItem.due, second: Date()) == .orderedSame
             return mutableItem
         }
-        // sort the data by due and filter data by display item count
-        let filteredItems = Array(updatedItems.sorted(by: { $0.due < $1.due }).prefix(self.displayItems))
         
-        return filteredItems
+        // sort by due date according to the environment sort order, then limit to displayItems
+        let sorted: [any TimelinePreviewItemModel]
+        switch self.sortOrder {
+        case .ascending:
+            sorted = updatedItems.sorted(by: { $0.due < $1.due })
+        case .descending:
+            sorted = updatedItems.sorted(by: { $0.due > $1.due })
+        }
+        return Array(sorted.prefix(self.displayItems))
     }
 }
 

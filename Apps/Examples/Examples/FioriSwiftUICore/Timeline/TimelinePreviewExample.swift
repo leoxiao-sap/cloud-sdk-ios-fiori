@@ -31,10 +31,10 @@ struct TimelinePreviewItemModelImplementation: TimelinePreviewItemModel {
 struct TimelinePreviewExample: View {
     @State private var items0: [TimelinePreviewItemModelImplementation] = [
         TimelinePreviewItemModelImplementation(title: "Open", icon: Image(systemName: "a.square"), timelineNode: TimelineNodeType.inProgress, due: ISO8601DateFormatter().date(from: "2025-09-21T12:00:00Z")!),
-        TimelinePreviewItemModelImplementation(title: "Before start", timelineNode: TimelineNodeType.start, due: ISO8601DateFormatter().date(from: "2025-07-23T12:00:00Z")!),
-        TimelinePreviewItemModelImplementation(title: "Start", timelineNode: TimelineNodeType.open, due: ISO8601DateFormatter().date(from: "2025-08-16T12:00:00Z")!),
-        TimelinePreviewItemModelImplementation(title: "Open", timelineNode: TimelineNodeType.inProgress, due: ISO8601DateFormatter().date(from: "2025-08-15T12:00:00Z")!),
-        TimelinePreviewItemModelImplementation(title: "Open", timelineNode: TimelineNodeType.open, due: ISO8601DateFormatter().date(from: "2025-09-27T12:00:00Z")!)
+        TimelinePreviewItemModelImplementation(title: "Delete", timelineNode: TimelineNodeType.delete, due: ISO8601DateFormatter().date(from: "2025-07-23T12:00:00Z")!, dateFormat: "MMM dd yyyy"),
+        TimelinePreviewItemModelImplementation(title: "Add", timelineNode: TimelineNodeType.add, due: ISO8601DateFormatter().date(from: "2025-06-16T12:00:00Z")!, dateFormat: "MMM-dd-yyyy"),
+        TimelinePreviewItemModelImplementation(title: "Open", timelineNode: TimelineNodeType.inProgress, due: ISO8601DateFormatter().date(from: "2027-08-15T12:00:00Z")!),
+        TimelinePreviewItemModelImplementation(title: "Open", timelineNode: TimelineNodeType.open, due: Date())
     ]
     @State private var items1: [TimelinePreviewItemModelImplementation] = [
         TimelinePreviewItemModelImplementation(title: "Open", timelineNode: TimelineNodeType.inProgress, due: ISO8601DateFormatter().date(from: "2024-09-21T12:00:00Z")!),
@@ -60,7 +60,7 @@ struct TimelinePreviewExample: View {
             Text("TimelinePreview: Future").listRowSeparator(.hidden)
             TimelinePreview(optionalTitle: { Text("Timeline") }, items: .constant(self.items0.map { $0 as any TimelinePreviewItemModel })).listRowSeparator(.hidden)
             Text("TimelinePreview: Present").listRowSeparator(.hidden)
-            TimelinePreview(optionalTitle: { Text("Timeline") }, items: .constant(self.items1.map { $0 as any TimelinePreviewItemModel })).listRowSeparator(.hidden)
+            TimelinePreview(optionalTitle: { Text("Timeline") }, items: .constant(self.items1.map { $0 as any TimelinePreviewItemModel })).timelinePreviewSortOrder(.descending).listRowSeparator(.hidden)
             Text("TimelinePreview: Past").listRowSeparator(.hidden)
             TimelinePreview(optionalTitle: { Text("Timeline") }, items: .constant(self.items2.map { $0 as any TimelinePreviewItemModel })).listRowSeparator(.hidden)
             Text("TimelinePreview: No Header").listRowSeparator(.hidden)

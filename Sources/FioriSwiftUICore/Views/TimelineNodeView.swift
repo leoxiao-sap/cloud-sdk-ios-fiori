@@ -14,15 +14,19 @@ public struct TimelineNodeView: View {
     public var body: some View {
         switch self.nodeType {
         case .beforeStart, .beforeEnd:
-            Image(systemName: "diamond")
+            Image(fioriName: "fiori.tag")
         case .start, .end:
-            Image(systemName: "diamond.fill")
+            Image(fioriName: "fiori.rhombus.milestone.2")
         case .open:
-            Image(systemName: "circle")
+            Image(fioriName: "fiori.circle.task")
         case .inProgress:
             Image(systemName: "ellipsis.circle.fill")
         case .complete:
-            Image(systemName: "checkmark.circle.fill")
+            Image(fioriName: "fiori.sys.enter.2")
+        case .add:
+            Image(fioriName: "fiori.add")
+        case .delete:
+            Image(fioriName: "fiori.delete.fill")
         }
     }
 }
@@ -43,4 +47,8 @@ public enum TimelineNodeType {
     case beforeEnd
     /// timeline event end
     case end
+    /// timeline event add
+    case add
+    /// timeline event delete
+    case delete
 }
