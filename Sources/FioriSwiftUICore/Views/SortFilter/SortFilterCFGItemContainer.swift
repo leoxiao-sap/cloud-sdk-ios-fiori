@@ -224,7 +224,6 @@ extension SortFilterCFGItemContainer: View {
         let allowsMultipleSelection = self._items[r][c].picker.allowsMultipleSelection
 
         if allowsMultipleSelection {
-            // [26-05-08 Xiao] test code, will delete later -- this is another crucial point
             return ListPickerDestination(self._items[r][c].picker.uuidValueOptions,
                                          id: \.id,
                                          selections: Binding<Set<UUID>>(get: { self._items[r][c].picker.workingValueSet }, set: { self._items[r][c].picker.workingValueSet = $0 }),
