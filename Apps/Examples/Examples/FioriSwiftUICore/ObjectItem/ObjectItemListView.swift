@@ -12,11 +12,6 @@ struct ObjectItemListView<T: ListDataProtocol>: View {
     @State var cellTapped = false
     @State var singleSelection: Int?
     
-    /// Corner radius used for the swipe-revealed rounded corner.
-    private let rowCornerRadius: CGFloat = 16
-    
-    private let cellHorizontalInset: CGFloat = 32
-    
     init(title: String, listDataType: T.Type, changeLeftMargin: Bool = true, showEditButton: Bool = true) {
         self.title = title
         self.listDataType = listDataType
@@ -35,13 +30,12 @@ struct ObjectItemListView<T: ListDataProtocol>: View {
     @ViewBuilder
     private func swipeRoundedTrailing(@ViewBuilder content: () -> some View) -> some View {
         content()
-            .padding(.horizontal, self.cellHorizontalInset)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: self.rowCornerRadius, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
-            )
-            .clipShape(RoundedRectangle(cornerRadius: self.rowCornerRadius, style: .continuous))
+            .padding(.horizontal, 32)
+            .padding(.vertical, 16)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
     
     var body: some View {
