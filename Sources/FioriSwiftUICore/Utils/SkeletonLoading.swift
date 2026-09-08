@@ -151,10 +151,11 @@ struct ShimmerViewModifier: ViewModifier {
     }
 
     func body(content: Content) -> some View {
-        if self.isLoading {
-            self.shimmerContent(content: content)
-                .accessibilityRepresentation {
-                    content
+        self.shimmerContent(content: content)
+            .accessibilityHidden(self.isLoading)
+            .overlay {
+                if self.isLoading {
+                    Color.clear
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(self.loadingAccLabel)
                         .accessibilityValue("")
@@ -163,9 +164,7 @@ struct ShimmerViewModifier: ViewModifier {
                         .disabled(true)
                         .allowsHitTesting(false)
                 }
-        } else {
-            self.shimmerContent(content: content)
-        }
+            }
     }
     
     func shimmerContent(content: Content) -> some View {
