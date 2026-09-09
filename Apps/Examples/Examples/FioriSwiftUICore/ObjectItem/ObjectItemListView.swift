@@ -67,6 +67,8 @@ struct ObjectItemListView<T: ListDataProtocol>: View {
                             }
                         }
                         .listRowInsets(EdgeInsets())
+                        .alignmentGuide(.listRowSeparatorLeading) { _ in 16 }
+                        .alignmentGuide(.listRowSeparatorTrailing) { d in d.width - 16 }
                     }
                     .onDelete { indexSet in
                         print("delete \(indexSet)")
